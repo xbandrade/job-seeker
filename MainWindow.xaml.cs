@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using job_seeker.Utils;
+using job_seeker.Src;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace job_seeker
 {
@@ -54,14 +49,37 @@ namespace job_seeker
 
         }
 
-        private void AutoSearchDelay_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void AutoSearchDelay_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (AutoSearchDelay.SelectedIndex == 0)
             {
-                TextDisplay.Text = "Select a search delay time first!";
+                TextDisplay.Text = "Select a search delay time before enabling auto search";
                 return;
             }
+
             bool autoSearchDone = true; // TODO: call auto search <<<<<
+
+            string keywords = KeywordsTextBox.Text;
+            if (String.IsNullOrEmpty(keywords))
+            {
+                autoSearchDone = false;
+
+            }
+            TextDisplay.Text = $"Searching for \"{keywords}\"...";
+            await Task.Run(() =>
+            {
+                Scraper scraper = new();
+                List<Job> results = scraper.Scrape(keywords);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    ResultsList.ItemsSource = results;
+                });
+                if (results.Count  == 0)
+                {
+                    autoSearchDone = false;
+                }
+            });
+            
             if (autoSearchDone)
             {
                 DateTime now = DateTime.Now;
@@ -99,7 +117,24 @@ namespace job_seeker
             }
         }
 
-        private void Search_Button_Click(object sender, RoutedEventArgs e)
+        private void AddGridColumnBinding(GridView gridView, string header, string? attribute = null, double? width = null)
+        {
+            if (String.IsNullOrEmpty(attribute)) {
+                attribute = header;
+            }
+            GridViewColumn titleColumn = new()
+            {
+                Header = header,
+                DisplayMemberBinding = new Binding(attribute),
+            };
+            if (width.HasValue)
+            {
+                titleColumn.Width = width.Value;
+            }
+            gridView.Columns.Add(titleColumn);
+        }
+
+        private async void Search_Button_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(KeywordsTextBox.Text)){
                 TextDisplay.Text = "Enter some keywords before searching";
@@ -107,18 +142,32 @@ namespace job_seeker
             else
             {
                 string text = KeywordsTextBox.Text;
-                TextDisplay.Text = $"Searching for: {text}";
-                Scraper scraper = new();
-                List<string> results = scraper.Scrape(text);
-                ResultsList.ItemsSource = results;
-                if (results.Count > 0)
+                TextDisplay.Text = $"Searching for \"{text}\"...";
+                await Task.Run(() =>
                 {
-                    TextDisplay.Text = "Results for " + text;
-                }
-                else
-                {
-                    TextDisplay.Text = "No results found for " + text;
-                }
+                    Scraper scraper = new();
+                    List<Job> results = scraper.Scrape(text);
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        GridView gridView = new();
+                        AddGridColumnBinding(gridView, "Job Title", "Title", 250);
+                        AddGridColumnBinding(gridView, "Company", width: 170);
+                        AddGridColumnBinding(gridView, "Link", width: 200);
+                        AddGridColumnBinding(gridView, "Location");
+                        AddGridColumnBinding(gridView, "Date");
+                        ResultsList.View = gridView;
+                        ResultsList.ItemsSource = results;
+                        if (results.Count > 0)
+                        {
+                            TextDisplay.Text = $"Displaying search results for \"{text}\"";
+                        }
+                        else
+                        {
+                            TextDisplay.Text = $"No search results found for \"{text}\"";
+                        }
+                    });
+                });
             }
         }
     }
