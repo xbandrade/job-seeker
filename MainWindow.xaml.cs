@@ -16,12 +16,21 @@ namespace job_seeker
     public partial class MainWindow : Window
     {
         readonly List<int> delayList;
+        readonly Dictionary<string, string> periodDict;
         public MainWindow()
         {
             InitializeComponent();
             delayList = new()
             {
-                15, 30, 60, 120, 180
+                30, 60, 120, 180
+            };
+            periodDict = new()
+            {
+                { "", "Any Time" },
+                { "3600", "Past Hour" },
+                { "86400", "Past 24h" },
+                { "604800", "Past Week" },
+                { "18144000", "Past Month" },
             };
             List<ComboBoxItem> items = new()
             {
@@ -30,10 +39,16 @@ namespace job_seeker
                 new ComboBoxItem { Content = $"{delayList[1]} min" },
                 new ComboBoxItem { Content = $"{delayList[2]} min" },
                 new ComboBoxItem { Content = $"{delayList[3]} min" },
-                new ComboBoxItem { Content = $"{delayList[4]} min" },
             };
             AutoSearchDelay.ItemsSource = items;
             AutoSearchDelay.SelectedIndex = 0;
+            items = new();
+            foreach (var value in periodDict.Values)
+            {
+                items.Add(new ComboBoxItem { Content = value });
+            }
+            PublishDateComboBox.ItemsSource = items;
+            PublishDateComboBox.SelectedIndex = 2;
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -63,7 +78,9 @@ namespace job_seeker
             bool autoSearchDone = true; // TODO: call auto search <<<<<
 
             string keywords = KeywordsTextBox.Text;
-            if (String.IsNullOrEmpty(keywords))
+            string location = LocationTextBox.Text;
+            string period = periodDict.ElementAt(PublishDateComboBox.SelectedIndex).Key;
+            if (String.IsNullOrEmpty(keywords) && String.IsNullOrEmpty(location))
             {
                 autoSearchDone = false;
 
@@ -72,7 +89,7 @@ namespace job_seeker
             await Task.Run(() =>
             {
                 Scraper scraper = new();
-                List<Job> results = scraper.Scrape(keywords);
+                List<Job> results = scraper.Scrape(keywords, location, period);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     ResultsList.ItemsSource = results;
@@ -171,18 +188,20 @@ namespace job_seeker
 
         private async void Search_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(KeywordsTextBox.Text)){
+            if (string.IsNullOrWhiteSpace(KeywordsTextBox.Text) && string.IsNullOrWhiteSpace(LocationTextBox.Text))
+            {
                 TextDisplay.Text = "Enter some keywords before searching";
             }
             else
             {
-                string text = KeywordsTextBox.Text;
-                TextDisplay.Text = $"Searching for \"{text}\"...";
+                string keywordsText = KeywordsTextBox.Text ?? "";
+                string location = LocationTextBox.Text;
+                string period = periodDict.ElementAt(PublishDateComboBox.SelectedIndex).Key;
+                TextDisplay.Text = $"Searching for \"{keywordsText}\"...";
                 await Task.Run(() =>
                 {
                     Scraper scraper = new();
-                    List<Job> results = scraper.Scrape(text);
-
+                    List<Job> results = scraper.Scrape(keywordsText, location, period);
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         GridView gridView = new();
@@ -195,15 +214,20 @@ namespace job_seeker
                         ResultsList.ItemsSource = results;
                         if (results.Count > 0)
                         {
-                            TextDisplay.Text = $"Displaying search results for \"{text}\"";
+                            TextDisplay.Text = $"Displaying search results for \"{keywordsText}\"";
                         }
                         else
                         {
-                            TextDisplay.Text = $"No search results found for \"{text}\"";
+                            TextDisplay.Text = $"No search results found for \"{keywordsText}\"";
                         }
                     });
                 });
             }
+        }
+
+        private void PublishDateComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }
