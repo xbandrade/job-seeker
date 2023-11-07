@@ -7,6 +7,9 @@ using System.Windows.Controls;
 using job_seeker.Utils;
 using job_seeker.Src;
 using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Navigation;
+using System.Diagnostics;
 
 namespace job_seeker
 {
@@ -117,22 +120,54 @@ namespace job_seeker
             }
         }
 
+        private void HandleLinkClick(object sender, RequestNavigateEventArgs e)
+        {
+            string url = e.Uri.ToString();
+            System.Diagnostics.Process.Start(new ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            });
+        }
+
         private void AddGridColumnBinding(GridView gridView, string header, string? attribute = null, double? width = null)
         {
-            if (String.IsNullOrEmpty(attribute)) {
+            if (String.IsNullOrEmpty(attribute))
+            {
                 attribute = header;
             }
-            GridViewColumn titleColumn = new()
+            if (header == "Link")
             {
-                Header = header,
-                DisplayMemberBinding = new Binding(attribute),
-            };
-            if (width.HasValue)
-            {
-                titleColumn.Width = width.Value;
+                DataTemplate dataTemplate = new();
+                FrameworkElementFactory textBlockFactory = new(typeof(TextBlock));
+                FrameworkElementFactory hyperlinkFactory = new(typeof(Hyperlink));
+                hyperlinkFactory.SetBinding(Hyperlink.NavigateUriProperty, new Binding(attribute));
+                FrameworkElementFactory runFactory = new(typeof(Run));
+                runFactory.SetBinding(Run.TextProperty, new Binding(attribute));
+                hyperlinkFactory.AppendChild(runFactory);
+                hyperlinkFactory.AddHandler(Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler(HandleLinkClick));
+                textBlockFactory.AppendChild(hyperlinkFactory);
+                dataTemplate.VisualTree = textBlockFactory;
+                GridViewColumn linkColumn = new()
+                {
+                    Header = header,
+                    CellTemplate = dataTemplate,
+                    Width = width ?? double.NaN,
+                };
+                gridView.Columns.Add(linkColumn);
             }
-            gridView.Columns.Add(titleColumn);
+            else
+            {
+                GridViewColumn titleColumn = new()
+                {
+                    Header = header,
+                    DisplayMemberBinding = new Binding(attribute),
+                    Width = width ?? double.NaN,
+                };
+                gridView.Columns.Add(titleColumn);
+            }
         }
+
 
         private async void Search_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -151,8 +186,8 @@ namespace job_seeker
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         GridView gridView = new();
-                        AddGridColumnBinding(gridView, "Job Title", "Title", 250);
-                        AddGridColumnBinding(gridView, "Company", width: 170);
+                        AddGridColumnBinding(gridView, "Job Title", "Title", 220);
+                        AddGridColumnBinding(gridView, "Company", width: 150);
                         AddGridColumnBinding(gridView, "Link", width: 200);
                         AddGridColumnBinding(gridView, "Location");
                         AddGridColumnBinding(gridView, "Date");

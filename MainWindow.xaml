@@ -5,28 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:job_seeker"
         mc:Ignorable="d"
-        Title="Job Seeker" Height="420" Width="700" ResizeMode="CanMinimize" Icon="/job-search.png">
+        Title="Job Seeker" ResizeMode="CanResizeWithGrip" Icon="/job-search.png" Height="422" Width="767">
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FF73C3F4"/>
             <GradientStop Color="#FF6FCEB6" Offset="1"/>
         </LinearGradientBrush>
     </Window.Background>
-    <Viewbox x:Name="Job_Seeker" HorizontalAlignment="Center" Margin="0,0,0,-6" Stretch="Fill" Width="700">
-        <Grid Height="410" Width="698">
+    <Viewbox Stretch="Fill">
+        <Grid Height="406.04" Width="772">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="116*"/>
-                <ColumnDefinition Width="42*"/>
-                <ColumnDefinition Width="79*"/>
-                <ColumnDefinition Width="242*"/>
-                <ColumnDefinition Width="40*"/>
-                <ColumnDefinition Width="21*"/>
-                <ColumnDefinition Width="158*"/>
+                <ColumnDefinition Width="499*"/>
+                <ColumnDefinition Width="20*"/>
+                <ColumnDefinition Width="253*"/>
             </Grid.ColumnDefinitions>
-            <Label x:Name="Keywords_label" Content="Keywords:" Height="35" Width="261" FontFamily="Cascadia Mono" FontWeight="Bold" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="33,9,0,0" Grid.ColumnSpan="4"/>
-            <TextBox x:Name="KeywordsTextBox" TextWrapping="Wrap" Width="424" Height="27" TextChanged="TextBox_TextChanged" FontWeight="Bold" FontSize="14" Background="#FFEBEBEB" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,10,0,0" Grid.ColumnSpan="6" Grid.Column="1"/>
-            <Button x:Name="Search_Button" Content="Search" Height="27" Width="99" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="31,9,0,0" Grid.Column="6" Click="Search_Button_Click"/>
-            <ListView x:Name="ResultsList" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="ListView_SelectionChanged" Margin="32,47,32,83" Grid.ColumnSpan="7">
+            <Label x:Name="Keywords_label" Content="Keywords:" FontFamily="Cascadia Mono" FontWeight="Bold" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="26,10,0,0" RenderTransformOrigin="0.505,1.357"/>
+            <TextBox x:Name="KeywordsTextBox" TextWrapping="Wrap" Width="491" Height="27" TextChanged="TextBox_TextChanged" FontWeight="Bold" FontSize="14" Background="#FFEBEBEB" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="130,10,0,0" Grid.ColumnSpan="3"/>
+            <Button x:Name="Search_Button" Content="Search" Height="27" Width="98" FontWeight="Bold" Click="Search_Button_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="127,10,0,0" Grid.Column="2"/>
+            <ListView x:Name="ResultsList" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="ListView_SelectionChanged" Margin="26,52,28,66" Grid.ColumnSpan="3">
                 <ListView.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FFBDBDBD"/>
@@ -39,9 +35,9 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <ComboBox x:Name="AutoSearchDelay" Width="132" Height="27" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,349,0,0" SelectionChanged="AutoSearchDelay_SelectionChanged" Grid.Column="3" IsEnabled="False"/>
-            <CheckBox x:Name="AutoSearchCheckBox" Content="Enable Auto Search" IsChecked="False" FontFamily="Cascadia Mono" FontWeight="Bold" FontSize="16" Checked="AutoSearchCheckBox_Checked" Width="215" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="33,354,0,0" Grid.ColumnSpan="4" Unchecked="AutoSearchCheckBox_Unchecked"/>
-            <TextBox x:Name="TextDisplay" Width="282" Height="38" FontWeight="Bold" FontFamily="Cascadia Mono" IsReadOnly="True" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="147,344,0,0" TextChanged="TextBox_TextChanged_1" Grid.ColumnSpan="4" Grid.Column="3">
+            <ComboBox x:Name="AutoSearchDelay" SelectionChanged="AutoSearchDelay_SelectionChanged" IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="241,353,0,0" Width="135"/>
+            <CheckBox x:Name="AutoSearchCheckBox" Content="Enable Auto Search" IsChecked="False" FontFamily="Cascadia Mono" FontWeight="Bold" FontSize="16" Checked="AutoSearchCheckBox_Checked" Width="215" Unchecked="AutoSearchCheckBox_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="26,357,0,0"/>
+            <TextBox x:Name="TextDisplay" Width="324" Height="38" FontWeight="Bold" FontFamily="Cascadia Mono" IsReadOnly="True" TextAlignment="Center" TextWrapping="Wrap" TextChanged="TextBox_TextChanged_1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="420,348,0,0" Grid.ColumnSpan="3" RenderTransformOrigin="0.469,0.233">
                 <TextBox.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FFB5B5B5"/>
