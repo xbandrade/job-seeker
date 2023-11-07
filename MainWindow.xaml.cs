@@ -10,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Navigation;
 using System.Diagnostics;
+using System.Windows.Input;
 
 namespace job_seeker
 {
@@ -194,6 +195,7 @@ namespace job_seeker
             }
             else
             {
+                SearchButton.IsEnabled = false;
                 string keywordsText = KeywordsTextBox.Text ?? "";
                 string location = LocationTextBox.Text;
                 string period = periodDict.ElementAt(PublishDateComboBox.SelectedIndex).Key;
@@ -220,6 +222,7 @@ namespace job_seeker
                         {
                             TextDisplay.Text = $"No search results found for \"{keywordsText}\"";
                         }
+                        SearchButton.IsEnabled = true;
                     });
                 });
             }
@@ -228,6 +231,25 @@ namespace job_seeker
         private void PublishDateComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
+        }
+
+        private void PressSearchButton(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                e.Handled = true;
+                Search_Button_Click(sender, e);
+            }
+        }
+
+        private void KeywordsTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            PressSearchButton(sender, e);
+        }
+
+        private void LocationTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            PressSearchButton(sender, e);
         }
     }
 }
