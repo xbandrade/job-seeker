@@ -48,11 +48,11 @@
                 </TextBox.Background>
             </TextBox>
             <Label x:Name="LocationLabel" Content="Location" HorizontalAlignment="Left" Margin="26,44,0,0" VerticalAlignment="Top" FontFamily="Cascadia Mono" FontSize="16" FontWeight="Bold"/>
-            <TextBox x:Name="LocationTextBox" TextWrapping="Wrap" Width="197" Height="27" TextChanged="TextBox_TextChanged" FontWeight="Bold" FontSize="14" Background="#FFEBEBEB" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="130,46,0,0" VerticalContentAlignment="Center" TabIndex="3" KeyDown="LocationTextBox_KeyDown"/>
+            <TextBox x:Name="LocationTextBox" TextWrapping="Wrap" Width="197" Height="27" TextChanged="TextBox_TextChanged" FontWeight="Bold" FontSize="14" Background="#FFEBEBEB" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="130,46,0,0" VerticalContentAlignment="Center" TabIndex="3" KeyDown="LocationTextBox_KeyDown" Text="Worldwide"/>
             <ComboBox x:Name="PublishDateComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,10,0,0" Width="135" Grid.ColumnSpan="4" Grid.Column="1" Height="27" VerticalContentAlignment="Center" SelectionChanged="PublishDateComboBox_SelectionChanged" TabIndex="2"/>
             <Label x:Name="PageLabel" Content="1" HorizontalAlignment="Left" Margin="355,310,0,0" VerticalAlignment="Top" FontFamily="Cascadia Mono" FontSize="16" FontWeight="Bold" Width="62" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-            <Button x:Name="PreviousPageButton" Content="〈" Height="27" Width="28" FontWeight="Black" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="327,311,0,0" FontSize="16" IsEnabled="False"/>
-            <Button x:Name="NextPageButton" Content=" 〉" Height="27" Width="28" FontWeight="Black" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="420,311,0,0" FontSize="16" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsEnabled="False"/>
+            <Button x:Name="PreviousPageButton" Content="〈" Height="27" Width="28" FontWeight="Black" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="327,311,0,0" FontSize="16" IsEnabled="False" Click="PreviousPageButton_Click"/>
+            <Button x:Name="NextPageButton" Content=" 〉" Height="27" Width="28" FontWeight="Black" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="420,311,0,0" FontSize="16" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsEnabled="False" Click="NextPageButton_Click"/>
         </Grid>
     </Viewbox>
 </Window>

@@ -4,23 +4,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using job_seeker.Utils;
-using job_seeker.Src;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Navigation;
 using System.Diagnostics;
 using System.Windows.Input;
+using job_seeker.Utils;
+using job_seeker.Src;
 
 namespace job_seeker
 {
     public partial class MainWindow : Window
     {
+        private Scraper scraper;
         readonly List<int> delayList;
         readonly Dictionary<string, string> periodDict;
         public MainWindow()
         {
             InitializeComponent();
+            scraper = new();
             delayList = new()
             {
                 30, 60, 120, 180
@@ -89,8 +91,10 @@ namespace job_seeker
             TextDisplay.Text = $"Searching for \"{keywords}\"...";
             await Task.Run(() =>
             {
-                Scraper scraper = new();
-                List<Job> results = scraper.Scrape(keywords, location, period);
+                scraper = new(keywords, location, period);
+                List<Job> results = scraper.GetResults();
+                PreviousPageButton.IsEnabled = scraper.CurrentPage > 1 && results.Count > 0;
+                NextPageButton.IsEnabled = scraper.CurrentPage < scraper.TotalPages;
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     ResultsList.ItemsSource = results;
@@ -186,6 +190,11 @@ namespace job_seeker
             }
         }
 
+        private void UpdateJobLists()
+        {
+            List<Job> results = scraper.GetResults();
+            ResultsList.ItemsSource = results;
+        }
 
         private async void Search_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -202,8 +211,8 @@ namespace job_seeker
                 TextDisplay.Text = $"Searching for \"{keywordsText}\"...";
                 await Task.Run(() =>
                 {
-                    Scraper scraper = new();
-                    List<Job> results = scraper.Scrape(keywordsText, location, period);
+                    scraper = new(keywordsText, location, period);
+                    List<Job> results = scraper.GetResults();
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         GridView gridView = new();
@@ -223,6 +232,9 @@ namespace job_seeker
                             TextDisplay.Text = $"No search results found for \"{keywordsText}\"";
                         }
                         SearchButton.IsEnabled = true;
+                        PreviousPageButton.IsEnabled = scraper.CurrentPage > 1 && results.Count > 0;
+                        NextPageButton.IsEnabled = scraper.CurrentPage < scraper.TotalPages;
+                        PageLabel.Content = scraper.CurrentPage.ToString();
                     });
                 });
             }
@@ -250,6 +262,29 @@ namespace job_seeker
         private void LocationTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             PressSearchButton(sender, e);
+        }
+
+        private void PageChangeClick(int pageChange = 1)
+        {
+            if (scraper != null)
+            {
+                scraper.CurrentPage += pageChange;
+                PreviousPageButton.IsEnabled = scraper.CurrentPage > 1;
+                NextPageButton.IsEnabled = scraper.CurrentPage < scraper.TotalPages;
+                PageLabel.Content = scraper.CurrentPage.ToString();
+            }
+        }
+
+        private void NextPageButton_Click(object sender, RoutedEventArgs e)
+        {
+            PageChangeClick();
+            UpdateJobLists();
+        }
+
+        private void PreviousPageButton_Click(object sender, RoutedEventArgs e)
+        {
+            PageChangeClick(-1);
+            UpdateJobLists();
         }
     }
 }
