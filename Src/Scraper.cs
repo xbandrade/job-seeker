@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using job_seeker.Src;
+using JobSeeker.Src;
 using System;
 using System.Threading;
 
-namespace job_seeker.Utils;
+namespace JobSeeker.Utils;
 public class Scraper
 {
     private readonly string url;
@@ -82,6 +82,8 @@ public class Scraper
                 jobList.Add(new Job(scrapedJobDataList[i]));
             }
         }
+        browser.Quit();
+        chromeDriverService.Dispose();
         return jobList;
     }
 }

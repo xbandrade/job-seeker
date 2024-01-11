@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace job_seeker.Src;
+namespace JobSeeker.Src;
 
 public class Job
 {
